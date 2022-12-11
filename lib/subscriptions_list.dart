@@ -9,7 +9,7 @@ class SubscriptionsList extends StatefulWidget {
 
 class SubscriptionsListState extends State<SubscriptionsList> {
   static int _counter = 0;
-  static final List<ListTile>_rows = <ListTile>[];
+  static final List<ListTile> _rows = <ListTile>[];
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +31,20 @@ class SubscriptionsListState extends State<SubscriptionsList> {
       );
     } else {
       return ReorderableListView(
+        onReorder: reorder,
         children: _rows,
-        onReorder: (int oldIndex, int newIndex) {
-          setState(() {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-            final ListTile item = _rows.removeAt(oldIndex);
-            _rows.insert(newIndex, item);
-          });
-        },
       );
     }
+  }
+
+  void reorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (oldIndex < newIndex) {
+        newIndex -= 1;
+      }
+      final ListTile item = _rows.removeAt(oldIndex);
+      _rows.insert(newIndex, item);
+    });
   }
 
   void addRow() {
@@ -65,6 +67,40 @@ class SubscriptionsListState extends State<SubscriptionsList> {
     });
   }
 
+  confirmationPrompt(int rowHashcode) {
+    Widget cancelButton = TextButton(
+      child: const Text("Cancel"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    Widget confirmButton = TextButton(
+      child: const Text("Delete"),
+      onPressed: () => {
+        removeRow(rowHashcode),
+        Navigator.pop(context)
+      }
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("Delete Subscription"),
+      content: const Text(
+          "Are you sure you want to delete this subscription record?"),
+      actions: [
+        cancelButton,
+        confirmButton,
+      ],
+    );
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   ListTile createRow() {
     // ignore: no_leading_underscores_for_local_identifiers
     final _key = Key(_counter.toString());
@@ -79,7 +115,7 @@ class SubscriptionsListState extends State<SubscriptionsList> {
         ),
       ),
       trailing: ElevatedButton(
-        onPressed: (() => removeRow(_key.hashCode)),
+        onPressed: (() => confirmationPrompt(_key.hashCode)),
         child: const Icon(
           Icons.delete,
         ),
