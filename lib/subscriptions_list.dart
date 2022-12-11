@@ -9,7 +9,7 @@ class SubscriptionsList extends StatefulWidget {
 
 class SubscriptionsListState extends State<SubscriptionsList> {
   static int _counter = 0;
-  static final _rows = <ListTile>[];
+  static final List<ListTile>_rows = <ListTile>[];
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +30,17 @@ class SubscriptionsListState extends State<SubscriptionsList> {
         ),
       );
     } else {
-      return ListView.builder(
-        itemCount: _rows.length,
-        itemBuilder: (context, index) => _rows[index],
+      return ReorderableListView(
+        children: _rows,
+        onReorder: (int oldIndex, int newIndex) {
+          setState(() {
+            if (oldIndex < newIndex) {
+              newIndex -= 1;
+            }
+            final ListTile item = _rows.removeAt(oldIndex);
+            _rows.insert(newIndex, item);
+          });
+        },
       );
     }
   }
@@ -62,19 +70,20 @@ class SubscriptionsListState extends State<SubscriptionsList> {
     final _key = Key(_counter.toString());
 
     return ListTile(
-        key: _key,
-        leading: Text(
-          "This is row $_counter",
-          style: TextStyle(
-            background: Paint()..color = Colors.lightGreen,
-            fontSize: 16,
-          ),
+      key: _key,
+      leading: Text(
+        "This is row $_counter",
+        style: TextStyle(
+          background: Paint()..color = Colors.lightGreen,
+          fontSize: 16,
         ),
-        trailing: ElevatedButton(
-          onPressed: (() => removeRow(_key.hashCode)),
-          child: const Icon(
-            Icons.delete,
-          ),
-        ));
+      ),
+      trailing: ElevatedButton(
+        onPressed: (() => removeRow(_key.hashCode)),
+        child: const Icon(
+          Icons.delete,
+        ),
+      ),
+    );
   }
 }
