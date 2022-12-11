@@ -4,28 +4,17 @@ class SubscriptionsList extends StatefulWidget {
   const SubscriptionsList({super.key});
 
   @override
-  State<SubscriptionsList> createState() => _SubscriptionsListState();
+  State<SubscriptionsList> createState() => SubscriptionsListState();
 }
 
-class _SubscriptionsListState extends State<SubscriptionsList> {
+class SubscriptionsListState extends State<SubscriptionsList> {
   static int _counter = 0;
   static final _rows = <ListTile>[];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("My Subscriptions"),
-      ),
-      body: createList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: addRow,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
+    final list = createList();
+    return list;
   }
 
   Widget createList() {
