@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:localstore/localstore.dart';
 import 'subscriptions_list.dart';
@@ -23,7 +25,10 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: const Text("My Subscriptions"),
-          leading: DataPersistence(db: db),
+          leading: ElevatedButton(
+            onPressed: (() async => log(await DataPersistence.instance.getData())),
+            child: const Icon(Icons.plus_one),
+          ),
         ),
         body: SubscriptionsList(key: _key),
         floatingActionButton: FloatingActionButton(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:subscription_tracker/data_persistence.dart';
+import 'package:subscription_tracker/subscription.dart';
 
 class SubscriptionsList extends StatefulWidget {
   const SubscriptionsList({super.key});
@@ -10,6 +12,7 @@ class SubscriptionsList extends StatefulWidget {
 class SubscriptionsListState extends State<SubscriptionsList> {
   static int _counter = 0;
   static final List<ListTile> _rows = <ListTile>[];
+  static final List<Subscription> _subscriptions = <Subscription>[];
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,7 @@ class SubscriptionsListState extends State<SubscriptionsList> {
   }
 
   Widget createList() {
-    if (_rows.isEmpty) {
+    if (_subscriptions.isEmpty) {
       return Container(
         alignment: const Alignment(0, 0),
         child: const Text(
@@ -32,7 +35,7 @@ class SubscriptionsListState extends State<SubscriptionsList> {
     } else {
       return ReorderableListView(
         onReorder: reorder,
-        children: _rows,
+        children: _subscriptions.map((e) => createTile(e)).toList(),
       );
     }
   }
@@ -42,21 +45,28 @@ class SubscriptionsListState extends State<SubscriptionsList> {
       if (oldIndex < newIndex) {
         newIndex -= 1;
       }
-      final ListTile item = _rows.removeAt(oldIndex);
-      _rows.insert(newIndex, item);
+      final Subscription item = _subscriptions.removeAt(oldIndex);
+      _subscriptions.insert(newIndex, item);
+
+      DataPersistence.instance.saveList(_subscriptions);
     });
+  }
+
+  void updateIndices() {
+
   }
 
   void addRow() {
     setState(() {
       _counter++;
-      _rows.add(createRow());
+      _subscriptions.add(createSubscription());
+      DataPersistence.instance.saveList(_subscriptions);
     });
   }
 
   void removeRow(int hashCode) {
     setState(() {
-      _rows.removeWhere(
+      _subscriptions.removeWhere(
         (element) {
           if (element.key.hashCode == hashCode) {
             return true;
@@ -64,6 +74,9 @@ class SubscriptionsListState extends State<SubscriptionsList> {
           return false;
         },
       );
+      DataPersistence.instance.saveList(_subscriptions);
+      // the new list is stored in the first length-1 cells, so we get rid of the unused last one
+      DataPersistence.instance.deleteSubscription(_subscriptions.length);
     });
   }
 
@@ -101,21 +114,30 @@ class SubscriptionsListState extends State<SubscriptionsList> {
     );
   }
 
-  ListTile createRow() {
-    // ignore: no_leading_underscores_for_local_identifiers
-    final _key = Key(_counter.toString());
+  Subscription createSubscription(){
+    final subscription = Subscription(
+      key: _counter, 
+      title: "This is row $_counter",
+      description: "Dummy description"
+    );
+
+    return subscription;
+  }
+
+  ListTile createTile(Subscription subscription) {
+    final key = Key(subscription.key.toString());
 
     return ListTile(
-      key: _key,
+      key: key,
       leading: Text(
-        "This is row $_counter",
+        subscription.title,
         style: TextStyle(
           background: Paint()..color = Colors.lightGreen,
           fontSize: 16,
         ),
       ),
       trailing: ElevatedButton(
-        onPressed: (() => confirmationPrompt(_key.hashCode)),
+        onPressed: (() => confirmationPrompt(subscription.key)),
         child: const Icon(
           Icons.delete,
         ),
