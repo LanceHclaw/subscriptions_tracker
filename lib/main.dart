@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         body: SubscriptionsList(key: _key),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _key.currentState!.addRow(),
-          tooltip: 'Increment',
+          tooltip: 'Add a Subscription',
           child: const Icon(Icons.add),
         ),
       ),
