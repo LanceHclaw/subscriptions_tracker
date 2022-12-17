@@ -11,8 +11,13 @@ class SubscriptionsList extends StatefulWidget {
 
 class SubscriptionsListState extends State<SubscriptionsList> {
   static int _counter = 0;
-  static final List<ListTile> _rows = <ListTile>[];
-  static final List<Subscription> _subscriptions = <Subscription>[];
+  static List<Subscription> _subscriptions = <Subscription>[];
+
+  @override
+  void initState(){
+    super.initState();
+    DataPersistence.instance.loadList().then((value) => {setState(() => _subscriptions = value)});
+  }
 
   @override
   Widget build(BuildContext context) {
