@@ -1,31 +1,42 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:subscription_tracker/subscriptions_list.dart';
+import 'package:localstore/localstore.dart';
+import 'subscriptions_list.dart';
+import 'data_persistence.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final db = Localstore.instance;
+  final _key = GlobalKey<SubscriptionsListState>();
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Subscriptions Tracker',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const SubscriptionsList(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("My Subscriptions"),
+          leading: ElevatedButton(
+            onPressed: (() async => log(await DataPersistence.instance.getData())),
+            child: const Icon(Icons.plus_one),
+          ),
+        ),
+        body: SubscriptionsList(key: _key),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _key.currentState!.addRow(),
+          tooltip: 'Add a Subscription',
+          child: const Icon(Icons.add),
+        ),
+      ),
     );
   }
 }
