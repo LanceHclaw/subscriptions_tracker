@@ -41,7 +41,11 @@ class Home extends StatelessWidget {
         onPressed: () => Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const SubscriptionForm(),
+            builder: (context) => SubscriptionForm(
+              null,
+              (subscription) =>
+                  _key.currentState!.createSubscription(subscription),
+            ),
           ),
         ),
         tooltip: 'Add a Subscription',

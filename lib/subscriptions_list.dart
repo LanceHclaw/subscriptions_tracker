@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:subscription_tracker/data_persistence.dart';
 import 'package:subscription_tracker/subscription.dart';
+import 'package:subscription_tracker/subscription_form.dart';
 
 class SubscriptionsList extends StatefulWidget {
   const SubscriptionsList({super.key});
@@ -10,13 +11,14 @@ class SubscriptionsList extends StatefulWidget {
 }
 
 class SubscriptionsListState extends State<SubscriptionsList> {
-  static int _counter = 0;
   static List<Subscription> _subscriptions = <Subscription>[];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    DataPersistence.instance.loadList().then((value) => {setState(() => _subscriptions = value)});
+    DataPersistence.instance
+        .loadList()
+        .then((value) => {setState(() => _subscriptions = value)});
   }
 
   @override
@@ -57,17 +59,13 @@ class SubscriptionsListState extends State<SubscriptionsList> {
     });
   }
 
-  void updateIndices() {
-
-  }
-
-  void addRow() {
-    setState(() {
-      _counter++;
-      _subscriptions.add(createSubscription());
-      DataPersistence.instance.saveList(_subscriptions);
-    });
-  }
+  // void addRow() {
+  //   setState(() {
+  //     _counter++;
+  //     _subscriptions.add(getNewDummySubscription());
+  //     DataPersistence.instance.saveList(_subscriptions);
+  //   });
+  // }
 
   void removeRow(int hashCode) {
     setState(() {
@@ -94,12 +92,8 @@ class SubscriptionsListState extends State<SubscriptionsList> {
     );
 
     Widget confirmButton = TextButton(
-      child: const Text("Delete"),
-      onPressed: () => {
-        removeRow(rowHashcode),
-        Navigator.pop(context)
-      }
-    );
+        child: const Text("Delete"),
+        onPressed: () => {removeRow(rowHashcode), Navigator.pop(context)});
 
     AlertDialog alert = AlertDialog(
       title: const Text("Delete Subscription"),
@@ -119,14 +113,29 @@ class SubscriptionsListState extends State<SubscriptionsList> {
     );
   }
 
-  Subscription createSubscription(){
-    final subscription = Subscription(
-      key: _counter, 
-      title: "This is row $_counter",
-      description: "Dummy description"
-    );
+  // Subscription getNewDummySubscription() {
+  //   final subscription = Subscription(
+  //     key: UniqueKey().hashCode,
+  //     title: "This is row $_counter",
+  //     description: "Dummy description",
+  //   );
 
-    return subscription;
+  //   return subscription;
+  // }
+
+  void createSubscription(Subscription subscription) {
+    setState(() {
+      _subscriptions.add(subscription);
+      DataPersistence.instance.saveList(_subscriptions);
+    });
+  }
+
+  void editSubscription(Subscription subscription) {
+    setState(() {
+      _subscriptions[_subscriptions.indexWhere(
+          (element) => element.key == subscription.key)] = subscription;
+      DataPersistence.instance.saveList(_subscriptions);
+    });
   }
 
   ListTile createTile(Subscription subscription) {
@@ -141,6 +150,14 @@ class SubscriptionsListState extends State<SubscriptionsList> {
           fontSize: 16,
         ),
       ),
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SubscriptionForm(
+              subscription,
+              (subscription) => editSubscription(subscription),
+            ),
+          )),
       trailing: ElevatedButton(
         onPressed: (() => confirmationPrompt(subscription.key)),
         child: const Icon(
