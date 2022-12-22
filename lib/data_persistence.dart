@@ -33,13 +33,13 @@ class DataPersistence {
     }
   }
 
-  void saveSubscription(Subscription subscription) {
-    _db.collection(_collection).doc(subscription.key.toString()).set({
-      Fields.key.name: subscription.key,
-      Fields.title.name: subscription.title,
-      Fields.description.name: subscription.description,
-    });
-  }
+  // void saveSubscription(Subscription subscription) {
+  //   _db.collection(_collection).doc(subscription.key.toString()).set({
+  //     Fields.key.name: subscription.key,
+  //     Fields.title.name: subscription.title,
+  //     Fields.description.name: subscription.description,
+  //   });
+  // }
 
   void deleteSubscription(int key) {
     _db.collection(_collection).doc(key.toString()).delete();
@@ -52,9 +52,9 @@ class DataPersistence {
   }
 }
 
-enum Fields {
-  key,
-  order,
-  title,
-  description,
-}
+// enum Fields {
+//   key,
+//   order,
+//   title,
+//   description,
+// }
