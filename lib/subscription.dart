@@ -60,11 +60,11 @@ class Renewal {
 
   Renewal.fromJson(Map<String, dynamic> json)
     : every = json['every'],
-      timePeriod = json['timePeriod'];
+      timePeriod = TimePeriod.values[json['timePeriod']];
   
   Map<String, dynamic> toJson() => {
     'every': every,
-    'timePeriod': timePeriod.toString(),
+    'timePeriod': timePeriod.index,
   };
 }
 
