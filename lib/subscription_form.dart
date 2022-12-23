@@ -52,36 +52,38 @@ class _SubscriptionFormState extends State<SubscriptionForm> {
       appBar: AppBar(
         title: const Text("New Subscription"),
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              maxLength: 30,
-              decoration: const InputDecoration(
-                labelText: "Title *",
-                hintText: "What service is this subscription for?",
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                maxLength: 30,
+                decoration: const InputDecoration(
+                  labelText: "Title *",
+                  hintText: "What service is this subscription for?",
+                ),
+                controller: titleController,
+                onFieldSubmitted: (value) => titleController.text = value,
+                validator: (value) => (value == null || value == '')
+                    ? 'Title cannot be empty'
+                    : null,
               ),
-              controller: titleController,
-              onFieldSubmitted: (value) => titleController.text = value,
-              validator: (value) => (value == null || value == '')
-                  ? 'Title cannot be empty'
-                  : null,
-            ),
-            amountFields(context),
-            dateSelector(context),
-            renewalPeriodSelector(context),
-            TextFormField(
-              maxLength: 200,
-              decoration: const InputDecoration(
-                labelText: "Description",
-                hintText: "Any details you'd like to take note of",
+              amountFields(context),
+              dateSelector(context),
+              renewalPeriodSelector(context),
+              TextFormField(
+                maxLength: 200,
+                decoration: const InputDecoration(
+                  labelText: "Description",
+                  hintText: "Any details you'd like to take note of",
+                ),
+                controller: descriptionController,
+                onFieldSubmitted: (value) => descriptionController.text = value,
               ),
-              controller: descriptionController,
-              onFieldSubmitted: (value) => descriptionController.text = value,
-            ),
-            exitButtons(context),
-          ],
+              exitButtons(context),
+            ],
+          ),
         ),
       ),
     );
